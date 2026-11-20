@@ -1,4 +1,4 @@
-import { Wrench, Kanban, Car, Package, LogOut } from "lucide-react";
+import { Wrench, Kanban, Car, Package, Users, LogOut } from "lucide-react";
 
 export default function Sidebar({
   vistaActiva,
@@ -10,6 +10,9 @@ export default function Sidebar({
     { id: "kanban", label: "Tablero Kanban", icono: Kanban },
     { id: "vehiculos", label: "Hoja de Vida Vehicular", icono: Car },
     { id: "inventario", label: "Inventario Inteligente", icono: Package },
+    ...(usuario?.rol === "ADMIN"
+      ? [{ id: "usuarios", label: "Equipo y Roles", icono: Users }]
+      : []),
   ];
 
   return (

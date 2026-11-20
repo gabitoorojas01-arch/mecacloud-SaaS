@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import KanbanBoard from "./pages/KanbanBoard";
 import VehiculosPage from "./pages/VehiculosPage";
 import InventarioPage from "./pages/InventarioPage";
+import UsuariosPage from "./pages/UsuariosPage";
 
 function App() {
   const [usuario, setUsuario] = useState(null);
@@ -42,6 +43,7 @@ function App() {
         {vistaActiva === "kanban" && <KanbanBoard />}
         {vistaActiva === "vehiculos" && <VehiculosPage />}
         {vistaActiva === "inventario" && <InventarioPage />}
+        {vistaActiva === "usuarios" && <UsuariosPage />}
       </main>
     </div>
   );
