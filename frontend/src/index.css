@@ -12,3 +12,19 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #zona-factura-pdf,
+  #zona-factura-pdf * {
+    visibility: visible;
+  }
+  #zona-factura-pdf {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white;
+  }
+}

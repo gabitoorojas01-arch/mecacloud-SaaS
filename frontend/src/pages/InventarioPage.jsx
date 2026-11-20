@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { fetchConToken } from "../services/api";
 import ModalNuevoRepuesto from "../components/ModalNuevoRepuesto";
 import ModalAsignarRepuesto from "../components/ModalAsignarRepuesto";
+import * as XLSX from "xlsx";
 import {
   Package,
   AlertTriangle,
@@ -10,6 +11,7 @@ import {
   ArrowUpCircle,
   Wrench,
   DollarSign,
+  FileSpreadsheet,
 } from "lucide-react";
 
 export default function InventarioPage() {
@@ -71,7 +73,25 @@ export default function InventarioPage() {
       maximumFractionDigits: 0,
     }).format(valor || 0);
   };
+  const exportarExcel = () => {
+    const filasExcel = repuestosFiltrados.map((r) => ({
+      Código: r.codigo,
+      "Nombre del Repuesto": r.nombre,
+      "Stock Actual": r.stockActual,
+      "Stock Mínimo": r.stockMinimo,
+      "Estado Stock": r.alertaStockBajo ? "ALERTA STOCK BAJO" : "ÓPTIMO",
+      "Precio Venta (COP)": Number(r.precioVenta || 0),
+      "Valor Total en Bodega (COP)":
+        Number(r.precioVenta || 0) * Number(r.stockActual || 0),
+    }));
 
+    const hoja = XLSX.utils.json_to_sheet(filasExcel);
+    const libro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(libro, hoja, "Inventario MecaCloud");
+
+    const fechaHoy = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(libro, `Inventario_MecaCloud_${fechaHoy}.xlsx`);
+  };
   const totalAlertas = repuestos.filter((r) => r.alertaStockBajo).length;
   const valorTotalBodega = repuestos.reduce(
     (acc, r) => acc + Number(r.precioVenta || 0) * Number(r.stockActual || 0),
@@ -98,14 +118,26 @@ export default function InventarioPage() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setModalNuevo(true)}
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-sm cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          Registrar Repuesto
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={exportarExcel}
+            disabled={repuestosFiltrados.length === 0}
+            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-sm cursor-pointer disabled:opacity-50"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            Exportar Excel
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setModalNuevo(true)}
+            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-sm cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            Registrar Repuesto
+          </button>
+        </div>
       </div>
 
       {mensajeOk && (
