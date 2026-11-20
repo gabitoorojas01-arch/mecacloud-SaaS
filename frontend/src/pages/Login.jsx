@@ -102,8 +102,12 @@ export default function Login({ onLoginSuccess }) {
           </button>
         </form>
 
-        <p className="text-center text-xs text-slate-400 mt-8">
+        <p className="text-center text-xs text-slate-400 mt-6">
           MecaCloud SaaS v1.0 • Plataforma en la Nube
+          <br />
+          <span className="font-medium text-slate-500">
+            Desarrollado por Gabriel Humberto Rojas Hernández
+          </span>
         </p>
       </div>
     </div>

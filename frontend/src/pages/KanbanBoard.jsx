@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchConToken } from "../services/api";
+import ModalFacturaOrden from "../components/ModalFacturaOrden";
 import {
   Plus,
   User,
@@ -7,6 +8,7 @@ import {
   ArrowRight,
   CheckCircle2,
   Clock,
+  FileText,
   Wrench,
   X,
 } from "lucide-react";
@@ -17,6 +19,7 @@ export default function KanbanBoard() {
   const [mecanicos, setMecanicos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [ordenFactura, setOrdenFactura] = useState(null);
 
   const [placaSeleccionada, setPlacaSeleccionada] = useState("");
   const [mecanicoSeleccionado, setMecanicoSeleccionado] = useState("");
@@ -203,7 +206,7 @@ export default function KanbanBoard() {
                             onClick={() =>
                               cambiarEstadoOrden(orden.idOrden, "EN_PROGRESO")
                             }
-                            className="w-full py-1.5 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-medium rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer"
+                            className="flex-1 py-1.5 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-medium rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer"
                           >
                             Iniciar Reparación
                             <ArrowRight className="w-3.5 h-3.5" />
@@ -214,12 +217,20 @@ export default function KanbanBoard() {
                             onClick={() =>
                               cambiarEstadoOrden(orden.idOrden, "TERMINADO")
                             }
-                            className="w-full py-1.5 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-medium rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer"
+                            className="flex-1 py-1.5 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-medium rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer"
                           >
                             Marcar Terminado
                             <CheckCircle2 className="w-3.5 h-3.5" />
                           </button>
                         )}
+                        <button
+                          type="button"
+                          onClick={() => setOrdenFactura(orden)}
+                          className="py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-indigo-600" />
+                          PDF
+                        </button>
                       </div>
                     </div>
                   ))
@@ -228,6 +239,12 @@ export default function KanbanBoard() {
             </div>
           );
         })}
+        {ordenFactura && (
+          <ModalFacturaOrden
+            orden={ordenFactura}
+            onCerrar={() => setOrdenFactura(null)}
+          />
+        )}
       </div>
 
       {mostrarModal && (

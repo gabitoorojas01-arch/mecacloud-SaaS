@@ -37,7 +37,7 @@ public class OrdenTrabajoController {
             OrdenTrabajo nuevaOrden = ordenTrabajoService.crearOrden(orden);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevaOrden);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
         }
     }
 

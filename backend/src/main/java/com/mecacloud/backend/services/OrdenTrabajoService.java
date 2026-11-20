@@ -55,6 +55,8 @@ public class OrdenTrabajoService {
                 throw new RuntimeException("El usuario seleccionado no tiene el rol de MECANICO.");
             }
             orden.setMecanico(mecanicoReal);
+        } else {
+            orden.setMecanico(null); // No se asigna mecánico aún
         }
 
         orden.setEstado("PENDIENTE");
