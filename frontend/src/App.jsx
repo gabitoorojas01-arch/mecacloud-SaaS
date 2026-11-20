@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Login from "./pages/Login";
 import Sidebar from "./components/Sidebar";
 import KanbanBoard from "./pages/KanbanBoard";
+import VehiculosPage from "./pages/VehiculosPage";
+import InventarioPage from "./pages/InventarioPage";
 
 function App() {
   const [usuario, setUsuario] = useState(null);
@@ -38,16 +40,8 @@ function App() {
 
       <main className="flex-1 overflow-y-auto">
         {vistaActiva === "kanban" && <KanbanBoard />}
-        {vistaActiva === "vehiculos" && (
-          <div className="p-8 text-slate-500 text-sm">
-            Módulo de Hoja de Vida Vehicular (Próximo paso)
-          </div>
-        )}
-        {vistaActiva === "inventario" && (
-          <div className="p-8 text-slate-500 text-sm">
-            Módulo de Inventario Inteligente (Próximo paso)
-          </div>
-        )}
+        {vistaActiva === "vehiculos" && <VehiculosPage />}
+        {vistaActiva === "inventario" && <InventarioPage />}
       </main>
     </div>
   );
