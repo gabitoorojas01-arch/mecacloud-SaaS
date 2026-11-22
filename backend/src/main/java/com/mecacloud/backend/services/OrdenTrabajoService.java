@@ -8,6 +8,11 @@ import com.mecacloud.backend.repositories.UsuarioRepository;
 import com.mecacloud.backend.repositories.VehiculoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.mecacloud.backend.models.DetalleOrden;
+import com.mecacloud.backend.models.Repuesto;
+import com.mecacloud.backend.repositories.DetalleOrdenRepository;
+import com.mecacloud.backend.repositories.RepuestoRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -97,5 +102,28 @@ public class OrdenTrabajoService {
 
         orden.setMecanico(mecanico);
         return ordenTrabajoRepository.save(orden);
+    }
+    @Autowired
+    private DetalleOrdenRepository detalleOrdenRepository;
+
+    @Autowired
+    private RepuestoRepository repuestoRepository;
+
+    // Eliminar orden de trabajo, devolver repuestos al stock y limpiar detalles
+    @Transactional
+    public void eliminarOrden(Integer idOrden) {
+        OrdenTrabajo orden = ordenTrabajoRepository.findById(idOrden)
+                .orElseThrow(() -> new RuntimeException("No se encontró la orden de trabajo #" + idOrden));
+
+        List<DetalleOrden> detalles = detalleOrdenRepository.findByOrdenTrabajoIdOrden(idOrden);
+        for (DetalleOrden detalle : detalles) {
+            Repuesto repuesto = detalle.getRepuesto();
+            if (repuesto != null) {
+                repuesto.setStockActual(repuesto.getStockActual() + detalle.getCantidad());
+                repuestoRepository.save(repuesto);
+            }
+        }
+        detalleOrdenRepository.deleteAll(detalles);
+        ordenTrabajoRepository.delete(orden);
     }
 }

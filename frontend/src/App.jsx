@@ -5,6 +5,7 @@ import KanbanBoard from "./pages/KanbanBoard";
 import VehiculosPage from "./pages/VehiculosPage";
 import InventarioPage from "./pages/InventarioPage";
 import UsuariosPage from "./pages/UsuariosPage";
+import DashboardPage from "./pages/DashboardPage";
 
 function App() {
   const [usuario, setUsuario] = useState(null);
@@ -14,7 +15,9 @@ function App() {
     const usuarioGuardado = localStorage.getItem("mecacloud_usuario");
     const tokenGuardado = localStorage.getItem("mecacloud_token");
     if (usuarioGuardado && tokenGuardado) {
-      setUsuario(JSON.parse(usuarioGuardado));
+      const datos = JSON.parse(usuarioGuardado);
+      setUsuario(datos);
+      if (datos.rol === "ADMIN") setVistaActiva("dashboard");
     }
   }, []);
 
@@ -44,6 +47,9 @@ function App() {
         {vistaActiva === "vehiculos" && <VehiculosPage />}
         {vistaActiva === "inventario" && <InventarioPage />}
         {vistaActiva === "usuarios" && <UsuariosPage />}
+        {vistaActiva === "dashboard" && (
+          <DashboardPage setVistaActiva={setVistaActiva} />
+        )}
       </main>
     </div>
   );

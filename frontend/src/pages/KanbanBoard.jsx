@@ -9,8 +9,10 @@ import {
   CheckCircle2,
   Clock,
   FileText,
+  MessageCircle,
   Wrench,
   X,
+  Trash2,
 } from "lucide-react";
 
 export default function KanbanBoard() {
@@ -59,6 +61,43 @@ export default function KanbanBoard() {
     }
   };
 
+  const eliminarOrden = async (idOrden, placa) => {
+    const confirmar = window.confirm(
+      `¿Seguro que deseas eliminar la Orden #${idOrden} (${placa})? Si tiene repuestos asignados, volverán al inventario.`,
+    );
+    if (!confirmar) return;
+
+    try {
+      await fetchConToken(`/ordenes/${idOrden}`, {
+        method: "DELETE",
+      });
+      cargarDatos();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const construirUrlWhatsApp = (orden) => {
+    const telefonoRaw = orden.vehiculo?.cliente?.telefono || "";
+    const soloNumeros = telefonoRaw.replace(/\D/g, "");
+    const telefonoColombia = soloNumeros.startsWith("57")
+      ? soloNumeros
+      : "57" + soloNumeros;
+
+    const nombreCliente = orden.vehiculo?.cliente?.nombre || "Cliente";
+    const vehiculoTexto = [orden.vehiculo?.marca, orden.vehiculo?.modelo]
+      .filter(Boolean)
+      .join(" ");
+    const placa = orden.vehiculo?.placa || "";
+
+    const mensaje = `Hola ${nombreCliente}, te saludamos de MecaCloud Taller Automotriz. Te informamos que tu vehículo ${vehiculoTexto} de placa ${placa} (Orden #${orden.idOrden}) ya está LISTO PARA ENTREGA. ¡Te esperamos!`;
+
+    const dominio = ["https://", "api.", "whatsapp.com", "/send"].join("");
+    const url = new URL(dominio);
+    url.searchParams.set("phone", telefonoColombia);
+    url.searchParams.set("text", mensaje);
+    return url.toString();
+  };
   const crearNuevaOrden = async (e) => {
     e.preventDefault();
     setErrorModal("");
@@ -174,9 +213,21 @@ export default function KanbanBoard() {
                         <span className="px-2.5 py-1 bg-slate-900 text-white text-xs font-bold tracking-wider rounded-lg">
                           {orden.vehiculo.placa}
                         </span>
-                        <span className="text-xs text-slate-400 font-medium">
-                          Orden #{orden.idOrden}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-slate-400 font-medium">
+                            Orden #{orden.idOrden}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              eliminarOrden(orden.idOrden, orden.vehiculo.placa)
+                            }
+                            title="Eliminar orden"
+                            className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
 
                       <p className="text-sm font-semibold text-slate-800">
@@ -222,6 +273,17 @@ export default function KanbanBoard() {
                             Marcar Terminado
                             <CheckCircle2 className="w-3.5 h-3.5" />
                           </button>
+                        )}
+                        {col.id === "TERMINADO" && (
+                          <a
+                            href={construirUrlWhatsApp(orden)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition cursor-pointer"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            WhatsApp
+                          </a>
                         )}
                         <button
                           type="button"

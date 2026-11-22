@@ -1,4 +1,12 @@
-import { Wrench, Kanban, Car, Package, Users, LogOut } from "lucide-react";
+import {
+  Wrench,
+  LayoutDashboard,
+  Kanban,
+  Car,
+  Package,
+  Users,
+  LogOut,
+} from "lucide-react";
 
 export default function Sidebar({
   vistaActiva,
@@ -7,6 +15,15 @@ export default function Sidebar({
   onLogout,
 }) {
   const menuItems = [
+    ...(usuario?.rol === "ADMIN"
+      ? [
+          {
+            id: "dashboard",
+            label: "Dashboard Gerencial",
+            icono: LayoutDashboard,
+          },
+        ]
+      : []),
     { id: "kanban", label: "Tablero Kanban", icono: Kanban },
     { id: "vehiculos", label: "Hoja de Vida Vehicular", icono: Car },
     { id: "inventario", label: "Inventario Inteligente", icono: Package },

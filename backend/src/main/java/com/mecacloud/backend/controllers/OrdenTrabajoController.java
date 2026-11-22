@@ -63,4 +63,13 @@ public class OrdenTrabajoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @DeleteMapping("/{idOrden}")
+public ResponseEntity<?> eliminarOrden(@PathVariable Integer idOrden) {
+    try {
+        ordenTrabajoService.eliminarOrden(idOrden);
+        return ResponseEntity.ok(Map.of("mensaje", "Orden #" + idOrden + " eliminada correctamente"));
+    } catch (RuntimeException e) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+    }
+}
 }
