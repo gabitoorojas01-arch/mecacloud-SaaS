@@ -43,7 +43,7 @@ function App() {
       />
 
       <main className="flex-1 overflow-y-auto">
-        {vistaActiva === "kanban" && <KanbanBoard />}
+        {vistaActiva === "kanban" && <KanbanBoard usuario={usuario} />}{" "}
         {vistaActiva === "vehiculos" && <VehiculosPage />}
         {vistaActiva === "inventario" && <InventarioPage />}
         {vistaActiva === "usuarios" && <UsuariosPage />}

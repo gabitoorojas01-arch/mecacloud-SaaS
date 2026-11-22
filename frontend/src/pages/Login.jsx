@@ -13,7 +13,9 @@ export default function Login({ onLoginSuccess }) {
     setCargando(true);
 
     try {
-      const respuesta = await fetch("http://localhost:8080/api/auth/login", {
+      const apiUrl =
+        import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+      const respuesta = await fetch(`${apiUrl}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo, password }),

@@ -15,7 +15,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-export default function KanbanBoard() {
+export default function KanbanBoard({ usuario }) {
   const [ordenes, setOrdenes] = useState([]);
   const [vehiculos, setVehiculos] = useState([]);
   const [mecanicos, setMecanicos] = useState([]);
@@ -217,16 +217,21 @@ export default function KanbanBoard() {
                           <span className="text-xs text-slate-400 font-medium">
                             Orden #{orden.idOrden}
                           </span>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              eliminarOrden(orden.idOrden, orden.vehiculo.placa)
-                            }
-                            title="Eliminar orden"
-                            className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          {usuario?.rol === "ADMIN" && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                eliminarOrden(
+                                  orden.idOrden,
+                                  orden.vehiculo.placa,
+                                )
+                              }
+                              title="Eliminar orden"
+                              className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                         </div>
                       </div>
 
