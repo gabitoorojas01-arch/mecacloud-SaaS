@@ -15,6 +15,7 @@ import {
   Clock,
   AlertCircle,
   ShieldCheck,
+  Trash2,
 } from "lucide-react";
 
 export default function VehiculosPage() {
@@ -39,6 +40,28 @@ export default function VehiculosPage() {
       setVehiculos([]);
     } finally {
       setCargandoLista(false);
+    }
+  };
+  const usuarioActual = JSON.parse(
+    localStorage.getItem("mecacloud_usuario") || "{}",
+  );
+  const esAdmin = usuarioActual?.rol === "ADMIN";
+
+  const eliminarVehiculo = async (placa) => {
+    const confirmar = window.confirm(
+      `¿Seguro que deseas eliminar el vehículo con placa ${placa}? Esta acción no se puede deshacer.`,
+    );
+    if (!confirmar) return;
+
+    try {
+      await fetchConToken(`/vehiculos/${placa}`, {
+        method: "DELETE",
+      });
+      setVehiculoSeleccionado(null);
+      setHistorialOrdenes([]);
+      cargarVehiculos();
+    } catch (error) {
+      alert(error.message);
     }
   };
 
@@ -242,11 +265,24 @@ export default function VehiculosPage() {
                       {vehiculoSeleccionado.anio}
                     </p>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs font-semibold">
-                    <ShieldCheck className="w-4 h-4" /> Verificado
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/70 px-3 py-1 rounded-full text-xs font-semibold">
+                      <ShieldCheck className="w-4 h-4" /> Verificado
+                    </span>
+                    {esAdmin && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          eliminarVehiculo(vehiculoSeleccionado.placa)
+                        }
+                        title="Eliminar vehículo"
+                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl border border-slate-200/70 transition cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
-
                 <div className="pt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl mt-4">
                   <div className="flex items-center gap-3">
                     <User className="w-4 h-4 text-indigo-600" />

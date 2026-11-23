@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.List;
 
 @RestController
@@ -39,6 +40,16 @@ public class VehiculoController {
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevoVehiculo);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    // Endpoint DELETE: http://localhost:8080/api/vehiculos/ABC123
+    @DeleteMapping("/{placa}")
+    public ResponseEntity<?> eliminarVehiculo(@PathVariable String placa) {
+        try {
+            vehiculoService.eliminarVehiculo(placa);
+            return ResponseEntity.ok(Map.of("mensaje", "Vehículo " + placa.toUpperCase() + " eliminado correctamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
         }
     }
 }

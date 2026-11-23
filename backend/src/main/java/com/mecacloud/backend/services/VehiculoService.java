@@ -1,5 +1,6 @@
 package com.mecacloud.backend.services;
 
+import com.mecacloud.backend.repositories.OrdenTrabajoRepository;
 import com.mecacloud.backend.models.Cliente;
 import com.mecacloud.backend.models.Vehiculo;
 import com.mecacloud.backend.repositories.ClienteRepository;
@@ -48,5 +49,20 @@ public class VehiculoService {
 
         vehiculo.setCliente(clienteReal);
         return vehiculoRepository.save(vehiculo);
+    }
+    @Autowired
+    private OrdenTrabajoRepository ordenTrabajoRepository;
+
+    // Eliminar vehículo por placa (validando que no tenga órdenes de trabajo registradas)
+    public void eliminarVehiculo(String placa) {
+        String placaLimpia = placa.trim().toUpperCase();
+        Vehiculo vehiculo = vehiculoRepository.findById(placaLimpia)
+                .orElseThrow(() -> new RuntimeException("No se encontró el vehículo con placa: " + placaLimpia));
+
+        if (!ordenTrabajoRepository.findByVehiculoPlacaOrderByFechaIngresoDesc(placaLimpia).isEmpty()) {
+            throw new RuntimeException("No se puede eliminar el vehículo " + placaLimpia + " porque tiene órdenes de trabajo registradas en su historial.");
+        }
+
+        vehiculoRepository.delete(vehiculo);
     }
 }
