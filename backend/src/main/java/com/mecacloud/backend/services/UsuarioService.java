@@ -1,5 +1,6 @@
 package com.mecacloud.backend.services;
 
+import com.mecacloud.backend.repositories.OrdenTrabajoRepository;
 import com.mecacloud.backend.models.Usuario;
 import com.mecacloud.backend.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +50,24 @@ public class UsuarioService {
         usuario.setPassword(passwordEncriptada);
 
         return usuarioRepository.save(usuario);
+    }
+    @Autowired
+    private OrdenTrabajoRepository ordenTrabajoRepository;
+
+    // Eliminar empleado (validando que no tenga órdenes asignadas ni sea el único ADMIN)
+    public void eliminarUsuario(Integer idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("No se encontró el usuario con ID: " + idUsuario));
+
+        if (ordenTrabajoRepository.existsByMecanicoIdUsuario(idUsuario)) {
+            throw new RuntimeException("No se puede eliminar a '" + usuario.getNombre() + 
+                    "' porque tiene órdenes de trabajo asignadas en el historial.");
+        }
+
+        if ("ADMIN".equals(usuario.getRol()) && usuarioRepository.findByRol("ADMIN").size() <= 1) {
+            throw new RuntimeException("No se puede eliminar el único Administrador activo del sistema.");
+        }
+
+        usuarioRepository.delete(usuario);
     }
 }

@@ -11,4 +11,7 @@ public interface DetalleOrdenRepository extends JpaRepository<DetalleOrden, Inte
 
     // Lista todos los repuestos que se han instalado en una orden de trabajo específica
     List<DetalleOrden> findByOrdenTrabajoIdOrden(Integer idOrden);
+    
+    // Verifica si un repuesto ya ha sido utilizado en alguna orden de trabajo
+    boolean existsByRepuestoIdRepuesto(Integer idRepuesto);
 }

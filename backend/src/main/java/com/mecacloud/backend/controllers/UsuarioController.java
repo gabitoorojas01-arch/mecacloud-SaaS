@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import  java.util.Map;
 import java.util.List;
 
 @RestController
@@ -37,6 +38,16 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUsuario);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    // Endpoint DELETE: http://localhost:8080/api/usuarios/1
+    @DeleteMapping("/{idUsuario}")
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Integer idUsuario) {
+        try {
+            usuarioService.eliminarUsuario(idUsuario);
+            return ResponseEntity.ok(Map.of("mensaje", "Empleado eliminado correctamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
         }
     }
 }

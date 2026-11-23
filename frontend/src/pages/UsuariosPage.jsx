@@ -1,7 +1,15 @@
 import { useState, useEffect } from "react";
 import { fetchConToken } from "../services/api";
 import ModalNuevoUsuario from "../components/ModalNuevoUsuario";
-import { Users, ShieldCheck, Wrench, Plus, Search, Mail } from "lucide-react";
+import {
+  Users,
+  ShieldCheck,
+  Wrench,
+  Plus,
+  Search,
+  Mail,
+  Trash2,
+} from "lucide-react";
 
 export default function UsuariosPage() {
   const [usuarios, setUsuarios] = useState([]);
@@ -11,6 +19,27 @@ export default function UsuariosPage() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [mensajeOk, setMensajeOk] = useState("");
 
+  const usuarioActual = JSON.parse(
+    localStorage.getItem("mecacloud_usuario") || "{}",
+  );
+
+  const eliminarUsuario = async (idUsuario, nombre) => {
+    const confirmar = window.confirm(
+      `¿Seguro que deseas eliminar a "${nombre}" del equipo? Esta acción revocará su acceso de inmediato.`,
+    );
+    if (!confirmar) return;
+
+    try {
+      await fetchConToken(`/usuarios/${idUsuario}`, {
+        method: "DELETE",
+      });
+      setMensajeOk(`Empleado "${nombre}" eliminado correctamente.`);
+      setTimeout(() => setMensajeOk(""), 3500);
+      cargarUsuarios();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
   const cargarUsuarios = async () => {
     try {
       setCargando(true);
@@ -161,6 +190,7 @@ export default function UsuariosPage() {
                   <th className="py-3.5 px-5">Empleado</th>
                   <th className="py-3.5 px-5">Correo de Acceso</th>
                   <th className="py-3.5 px-5 text-center">Rol Asignado</th>
+                  <th className="py-3.5 px-5 text-center">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm">
@@ -184,6 +214,16 @@ export default function UsuariosPage() {
                       >
                         {u.rol}
                       </span>
+                    </td>
+                    <td className="py-3.5 px-5 text-center">
+                      {usuarioActual.rol === "ADMIN" && u.rol !== "ADMIN" && (
+                        <button
+                          onClick={() => eliminarUsuario(u.idUsuario, u.nombre)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

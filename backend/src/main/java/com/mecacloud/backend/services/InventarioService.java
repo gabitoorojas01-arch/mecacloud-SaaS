@@ -93,4 +93,16 @@ public class InventarioService {
     public List<DetalleOrden> obtenerDetallesPorOrden(Integer idOrden) {
         return detalleOrdenRepository.findByOrdenTrabajoIdOrden(idOrden);
     }
+    // Eliminar repuesto del inventario (validando que no tenga historial en órdenes)
+    public void eliminarRepuesto(Integer idRepuesto) {
+        Repuesto repuesto = repuestoRepository.findById(idRepuesto)
+                .orElseThrow(() -> new RuntimeException("No se encontró el repuesto con ID: " + idRepuesto));
+
+        if (detalleOrdenRepository.existsByRepuestoIdRepuesto(idRepuesto)) {
+            throw new RuntimeException("No se puede eliminar '" + repuesto.getNombre() + 
+                    "' porque ya fue utilizado en órdenes de trabajo.");
+        }
+
+        repuestoRepository.delete(repuesto);
+    }
 }

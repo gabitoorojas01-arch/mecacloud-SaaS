@@ -12,6 +12,7 @@ import {
   Wrench,
   DollarSign,
   FileSpreadsheet,
+  Trash2,
 } from "lucide-react";
 
 export default function InventarioPage() {
@@ -22,6 +23,29 @@ export default function InventarioPage() {
   const [modalNuevo, setModalNuevo] = useState(false);
   const [repuestoAsignar, setRepuestoAsignar] = useState(null);
   const [mensajeOk, setMensajeOk] = useState("");
+
+  const usuarioActual = JSON.parse(
+    localStorage.getItem("mecacloud_usuario") || "{}",
+  );
+  const esAdmin = usuarioActual?.rol === "ADMIN";
+
+  const eliminarRepuesto = async (idRepuesto, nombre) => {
+    const confirmar = window.confirm(
+      `¿Seguro que deseas eliminar "${nombre}" del inventario? Esta acción no se puede deshacer.`,
+    );
+    if (!confirmar) return;
+
+    try {
+      await fetchConToken(`/inventario/${idRepuesto}`, {
+        method: "DELETE",
+      });
+      setMensajeOk(`Repuesto "${nombre}" eliminado correctamente.`);
+      setTimeout(() => setMensajeOk(""), 3500);
+      cargarInventario();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   const cargarInventario = async () => {
     try {
@@ -293,6 +317,18 @@ export default function InventarioPage() {
                           <Wrench className="w-3.5 h-3.5" />
                           Cargar a Orden
                         </button>
+                        {esAdmin && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              eliminarRepuesto(r.idRepuesto, r.nombre)
+                            }
+                            title="Eliminar repuesto"
+                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200/70 transition cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

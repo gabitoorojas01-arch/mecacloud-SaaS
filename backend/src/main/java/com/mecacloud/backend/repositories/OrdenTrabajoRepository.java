@@ -17,4 +17,7 @@ public interface OrdenTrabajoRepository extends JpaRepository<OrdenTrabajo, Inte
 
     // Trae todas las órdenes asignadas a un mecánico específico
     List<OrdenTrabajo> findByMecanicoIdUsuario(Integer idMecanico);
+
+    // Verifica si un mecánico tiene órdenes de trabajo asignadas
+    boolean existsByMecanicoIdUsuario(Integer idUsuario);
 }

@@ -73,4 +73,14 @@ public class InventarioController {
     public List<DetalleOrden> listarRepuestosDeOrden(@PathVariable Integer idOrden) {
         return inventarioService.obtenerDetallesPorOrden(idOrden);
     }
+    // Endpoint DELETE: http://localhost:8080/api/inventario/1 (Elimina repuesto sin historial)
+    @DeleteMapping("/{idRepuesto}")
+    public ResponseEntity<?> eliminarRepuesto(@PathVariable Integer idRepuesto) {
+        try {
+            inventarioService.eliminarRepuesto(idRepuesto);
+            return ResponseEntity.ok(Map.of("mensaje", "Repuesto eliminado correctamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
 }
